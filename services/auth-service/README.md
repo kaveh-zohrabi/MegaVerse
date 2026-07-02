@@ -1,35 +1,58 @@
 # Auth Service
 
-Handles authentication, authorization, and session management.
+Go service handling authentication, authorization, and JWT token management.
+
+## Tech Stack
+
+- **Language**: Go 1.22
+- **Router**: gorilla/mux
+- **Database**: MySQL 8.0
+- **Auth**: JWT (HS256) + bcrypt
 
 ## Features
 
-- User registration and login
-- OAuth 2.0 / OIDC support (Google, GitHub, etc.)
-- JWT token management
-- Session management
-- MFA (Multi-Factor Authentication)
-- Password reset flow
-- API key management
+- User registration with email validation
+- User login with password verification
+- JWT access token generation
+- JWT refresh token generation
+- Token validation endpoint
+- Protected route middleware
 
 ## Endpoints
 
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
-- `POST /auth/logout` - User logout
-- `POST /auth/refresh` - Refresh token
-- `POST /auth/forgot-password` - Password reset request
-- `POST /auth/reset-password` - Password reset
-- `POST /auth/mfa/enable` - Enable MFA
-- `POST /auth/mfa/verify` - Verify MFA code
-- `GET /auth/oauth/:provider` - OAuth login
-- `GET /auth/oauth/:provider/callback` - OAuth callback
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | /auth/register | No | Register new user |
+| POST | /auth/login | No | Login and get tokens |
+| GET | /auth/validate | Yes | Validate JWT token |
+| GET | /health | No | Health check |
 
-## Security
+## Configuration
 
-- Bcrypt password hashing
-- JWT with RS256 signing
-- Rate limiting on auth endpoints
-- Account lockout after failed attempts
-- CSRF protection
-- Secure cookie handling
+| Variable | Default | Description |
+|----------|---------|-------------|
+| DATABASE_HOST | localhost | MySQL host |
+| DATABASE_PORT | 3306 | MySQL port |
+| DATABASE_NAME | megaverse | Database name |
+| DATABASE_USER | megaverse | Database user |
+| DATABASE_PASSWORD | password | Database password |
+| JWT_SECRET | dev-secret | JWT signing secret |
+| PORT | 8081 | Server port |
+
+## Development
+
+```bash
+# Run locally
+go run ./cmd/server
+
+# Build
+go build -o bin/server ./cmd/server
+```
+
+## Database
+
+Run migration before starting:
+
+```bash
+mysql -u root -p megaverse < migrations/001_create_users.sql
+```

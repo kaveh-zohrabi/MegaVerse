@@ -14,11 +14,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "@megaverse/shared/*": ["./shared/*"],
-      "@megaverse/libraries/*": ["./libraries/*"]
-    }
+    "baseUrl": "."
   },
   "exclude": ["node_modules", "dist", "build"]
 }

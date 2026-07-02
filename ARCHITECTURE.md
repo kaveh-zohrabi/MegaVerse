@@ -34,10 +34,10 @@ MegaVerse is a distributed microservices platform built as a polyglot monorepo.
    └─────┬─────┘    └─────┬─────┘    └─────┬─────┘
          │                │                 │
    ┌─────▼─────┐    ┌─────▼─────┐    ┌─────▼─────┐
-   │ Messaging │    │    AI     │    │   Shared  │
-   │  Service  │    │  Service  │    │   Data    │
-   │   (Go)    │    │ (Python)  │    │  Layer    │
-   └───────────┘    └───────────┘    └───────────┘
+   │ Messaging │    │    AI     │    │   MySQL   │
+   │  Service  │    │  Service  │    │  (Primary)│
+   │   (Go)    │    │ (Python)  │    └───────────┘
+   └───────────┘    └───────────┘
 ```
 
 ## Services
@@ -53,16 +53,15 @@ MegaVerse is a distributed microservices platform built as a polyglot monorepo.
 
 ## Communication
 
-- **Sync**: gRPC (internal), REST (external)
-- **Async**: Kafka events
-- **Real-time**: WebSocket
+- **Sync**: REST (external and internal)
+- **Real-time**: WebSocket (messaging)
 
 ## Data Flow
 
 1. Client → API Gateway (auth, rate limit)
 2. Gateway → Service (routing)
-3. Service → Database (query)
-4. Service → Kafka (events)
+3. Service → MySQL (query)
+4. Service → Redis (cache)
 5. Response → Client
 
 ## Tech Stack
@@ -71,16 +70,14 @@ MegaVerse is a distributed microservices platform built as a polyglot monorepo.
 |-------|-----------|
 | Frontend | Next.js, React, Flutter |
 | Backend | Go, Java, Python |
-| Database | PostgreSQL, Redis, Elasticsearch |
-| Queue | Kafka |
-| Infra | Docker, Kubernetes, Terraform |
-| AI | Python, PyTorch |
+| Database | MySQL (primary), Redis (cache) |
+| Infra | Docker, Terraform |
+| AI | Python, NumPy |
 
 ## Security
 
-- OAuth 2.0 / OIDC authentication
-- JWT with RS256 signing
+- JWT authentication with RS256 signing
+- OAuth 2.0 support (Google, GitHub)
 - RBAC authorization
-- mTLS between services
-- AES-256 encryption at rest
-- TLS 1.3 in transit
+- Rate limiting
+- Input validation

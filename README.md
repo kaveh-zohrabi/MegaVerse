@@ -12,6 +12,9 @@ MegaVerse is a monorepo-based platform combining AI, social features, communicat
 # Install dependencies
 pnpm install
 
+# Start database services
+docker-compose up -d
+
 # Start development
 pnpm dev
 
@@ -24,6 +27,8 @@ pnpm test
 - Node.js 20+
 - pnpm 9+
 - Go 1.22+
+- Java 21+
+- Python 3.12+
 - Docker & Docker Compose
 
 ## Project Structure
@@ -33,36 +38,44 @@ megaverse/
 ├── apps/              # Frontend applications (Next.js, Flutter)
 ├── services/          # Backend microservices (Go, Java, Python)
 ├── libraries/         # Shared libraries (UI, logging, etc.)
-├── shared/            # Shared types, constants, utilities
+├── shared/            # Shared types, constants, errors
 ├── sdk/               # Client SDKs (JavaScript, Python, Go)
 ├── ai/                # AI/ML pipeline and models
-├── gateway/           # API Gateway
+├── gateway/           # API Gateway (Node.js/TypeScript)
 ├── infra/             # Infrastructure (Terraform, Docker, monitoring)
 ├── docs/              # Documentation
 ├── tests/             # Test suites
-├── configs/           # Environment and service configs
 ├── scripts/           # Build and utility scripts
 ├── design/            # UI/UX design specs
 ├── research/          # Technical research
-├── benchmarks/        # Performance benchmarks
-├── examples/          # Code examples and templates
-└── tools/             # Developer tooling
+└── benchmarks/        # Performance benchmarks
 ```
 
-## Technologies
+## Services
+
+| Service | Language | Port | Description |
+|---------|----------|------|-------------|
+| api-gateway | Go | 8080 | Request routing, auth, rate limiting |
+| auth-service | Go | 8081 | Authentication, JWT, OAuth |
+| user-service | Go | 8082 | User profiles, preferences |
+| social-service | Java | 8083 | Posts, comments, followers |
+| messaging-service | Go | 8084 | Real-time messaging |
+| ai-service | Python | 8085 | ML inference, embeddings |
+
+## Tech Stack
 
 | Layer | Technologies |
 |-------|-------------|
 | Frontend | TypeScript, React, Next.js, Flutter |
 | Backend | Go, Java, Python, Node.js |
-| AI/ML | Python, CUDA |
-| Infrastructure | Terraform, Docker, Kubernetes |
-| Databases | PostgreSQL, Redis, Elasticsearch |
+| Database | MySQL, Redis |
+| AI/ML | Python, NumPy |
+| Infrastructure | Docker, Terraform |
 
 ## Documentation
 
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Roadmap](./docs/ROADMAP.md)
+- [Architecture](./ARCHITECTURE.md)
+- [Roadmap](./ROADMAP.md)
 - [Contributing](./CONTRIBUTING.md)
 - [API Reference](./docs/api.md)
 - [Deployment](./docs/deployment.md)

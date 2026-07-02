@@ -13,26 +13,49 @@ pip install megaverse-sdk
 ```python
 from megaverse import MegaVerseClient
 
-client = MegaVerseClient(
-    api_key="your-api-key",
-    base_url="https://api.megaverse.dev",
-)
+client = MegaVerseClient(base_url="http://localhost:8080")
+
+# Login
+client.login("user@example.com", "password")
 
 # Get user
-user = client.users.get("user-id")
+user = client.get_user("user-id")
 
 # Create post
-post = client.posts.create(content="Hello MegaVerse!")
+post = client.create_post("Hello MegaVerse!")
+
+# Get feed
+posts = client.get_feed(limit=10)
 ```
 
-## Features
+## API Reference
 
-- Async support
-- Type hints
-- Automatic retries
-- Pydantic models
-- Context manager support
+### Client
 
-## Documentation
+```python
+MegaVerseClient(base_url: str, api_key: str = None)
+```
 
-See [docs.megaverse.dev/sdk/python](https://docs.megaverse.dev/sdk/python)
+### Auth
+
+- `register(email, name, password)` - Register new user
+- `login(email, password)` - Login and get tokens
+- `set_token(token)` - Set auth token
+
+### Users
+
+- `get_user(user_id)` - Get user profile
+- `update_profile(**kwargs)` - Update own profile
+- `follow(user_id)` - Follow user
+- `unfollow(user_id)` - Unfollow user
+
+### Posts
+
+- `create_post(content, media_url=None)` - Create post
+- `get_post(post_id)` - Get post
+- `delete_post(post_id)` - Delete post
+- `get_feed(page=1, limit=20)` - Get feed
+
+### Health
+
+- `health()` - Check API health

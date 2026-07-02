@@ -1,5 +1,5 @@
 {
-  "name": "@megaverse/logger",
+  "name": "@megaverse/constants",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",

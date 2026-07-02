@@ -5,7 +5,7 @@ Official Go SDK for the MegaVerse API.
 ## Installation
 
 ```bash
-go get megaverse.dev/sdk
+go get megaverse.dev/sdk/go
 ```
 
 ## Quick Start
@@ -15,32 +15,53 @@ package main
 
 import (
     "fmt"
-    "megaverse.dev/sdk"
+    megaverse "megaverse.dev/sdk/go"
 )
 
 func main() {
-    client := sdk.NewClient(
-        sdk.WithAPIKey("your-api-key"),
-        sdk.WithBaseURL("https://api.megaverse.dev"),
-    )
+    client := megaverse.NewClient("http://localhost:8080", "")
 
-    user, err := client.Users.Get("user-id")
-    if err != nil {
-        log.Fatal(err)
-    }
+    // Login
+    auth, _ := client.Login("user@example.com", "password")
+    fmt.Println("Token:", auth.AccessToken)
 
-    fmt.Println(user.Name)
+    // Get user
+    user, _ := client.GetUser("user-id")
+    fmt.Println("User:", user.Name)
+
+    // Create post
+    post, _ := client.CreatePost("Hello MegaVerse!")
+    fmt.Println("Post:", post.ID)
 }
 ```
 
-## Features
+## API Reference
 
-- Context support
-- Automatic retries
-- Type-safe API
-- Streaming support
-- Connection pooling
+### Client
 
-## Documentation
+```go
+NewClient(baseURL, apiKey string) *Client
+```
 
-See [docs.megaverse.dev/sdk/go](https://docs.megaverse.dev/sdk/go)
+### Auth
+
+- `Register(email, name, password string) (*User, error)`
+- `Login(email, password string) (*AuthResponse, error)`
+- `SetToken(token string)`
+
+### Users
+
+- `GetUser(id string) (*User, error)`
+- `Follow(userID string) error`
+- `Unfollow(userID string) error`
+
+### Posts
+
+- `CreatePost(content string) (*Post, error)`
+- `GetPost(id string) (*Post, error)`
+- `DeletePost(id string) error`
+- `GetFeed(params *PaginationParams) ([]Post, error)`
+
+### Health
+
+- `Health() (map[string]string, error)`

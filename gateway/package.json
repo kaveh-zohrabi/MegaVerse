@@ -11,14 +11,7 @@
   },
   "dependencies": {
     "hono": "^4.0.0",
-    "@hono/node-server": "^1.8.0",
-    "@megaverse/shared": "workspace:*",
-    "@megaverse/auth": "workspace:*",
-    "@megaverse/cache": "workspace:*",
-    "@megaverse/rate-limiter": "workspace:*",
-    "@megaverse/logger": "workspace:*",
-    "@megaverse/metrics": "workspace:*",
-    "@megaverse/circuit-breaker": "workspace:*"
+    "@hono/node-server": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

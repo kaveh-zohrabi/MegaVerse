@@ -1,0 +1,33 @@
+# Code Owners for MegaVerse
+# These owners will be automatically requested for review
+
+# Default owners for everything
+* @megaverse/core-team
+
+# Frontend
+/apps/web/ @megaverse/frontend-team
+/apps/mobile/ @megaverse/mobile-team
+/apps/admin-dashboard/ @megaverse/frontend-team
+
+# Backend Services
+/services/api-gateway/ @megaverse/backend-team
+/services/auth-service/ @megaverse/security-team
+/services/user-service/ @megaverse/backend-team
+/services/social-service/ @megaverse/backend-team
+/services/messaging-service/ @megaverse/backend-team
+/services/ai-service/ @megaverse/ai-team
+
+# AI/ML
+/ai/ @megaverse/ai-team
+
+# Infrastructure
+/k8s/ @megaverse/devops-team
+/helm/ @megaverse/devops-team
+/infrastructure/ @megaverse/devops-team
+/cloud/ @megaverse/devops-team
+
+# Security
+/security/ @megaverse/security-team
+
+# Documentation
+/docs/ @megaverse/docs-team

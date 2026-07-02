@@ -1,0 +1,15 @@
+{
+  "name": "@megaverse/icons",
+  "version": "0.1.0",
+  "description": "MegaVerse icon library",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "svg"],
+  "scripts": {
+    "build": "tsc",
+    "generate": "node scripts/generate.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

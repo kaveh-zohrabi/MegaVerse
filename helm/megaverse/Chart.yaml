@@ -1,0 +1,16 @@
+apiVersion: v2
+name: megaverse
+description: Helm chart for MegaVerse platform
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: MegaVerse Team
+    email: dev@megaverse.dev
+keywords:
+  - megaverse
+  - platform
+  - microservices
+home: https://megaverse.dev
+sources:
+  - https://github.com/megaverse/megaverse

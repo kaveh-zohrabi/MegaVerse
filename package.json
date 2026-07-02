@@ -1,0 +1,40 @@
+{
+  "name": "megaverse",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MegaVerse - One of the largest modular software ecosystems",
+  "workspaces": [
+    "apps/*",
+    "services/*/src",
+    "packages/*",
+    "libraries/*",
+    "shared/*",
+    "sdk/javascript",
+    "sdk/cli",
+    "gateway"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.2.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

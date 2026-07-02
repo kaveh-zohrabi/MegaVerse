@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Build Docker Images
+        run: |
+          for service in services/*/; do
+            if [ -f "$service/Dockerfile" ]; then
+              docker build -t ghcr.io/megaverse/$(basename $service):${{ github.ref_name }} $service
+            fi
+          done
+
+      - name: Push Docker Images
+        run: |
+          echo "Pushing to container registry..."

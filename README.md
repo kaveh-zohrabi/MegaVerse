@@ -2,63 +2,52 @@
 
 A modular, polyglot software ecosystem built for scale.
 
-## Overview
-
-MegaVerse is a monorepo-based platform combining AI, social features, communication, marketplace, and developer tools into one scalable ecosystem. Built with microservices architecture and designed for billions of users.
-
 ## Quick Start
 
 ```bash
+# Start MySQL
+docker-compose -f docker-compose.dev.yml up -d
+
 # Install dependencies
-pnpm install
+npm install
 
-# Start database services
-docker-compose up -d
-
-# Start development
-pnpm dev
-
-# Run tests
-pnpm test
+# Run frontend
+cd apps/web && npm run dev
 ```
+
+Open **http://localhost:3000**
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 9+
-- Go 1.22+
-- Java 21+
-- Python 3.12+
+- Node.js 18+
+- npm
 - Docker & Docker Compose
 
 ## Project Structure
 
 ```
 megaverse/
-├── apps/              # Frontend applications (Next.js, Flutter)
+├── apps/              # Frontend applications (Next.js)
 ├── services/          # Backend microservices (Go, Java, Python)
-├── libraries/         # Shared libraries (UI, logging, etc.)
-├── shared/            # Shared types, constants, errors
+├── libraries/         # Shared libraries
+├── shared/            # Shared types and constants
 ├── sdk/               # Client SDKs (JavaScript, Python, Go)
-├── ai/                # AI/ML pipeline and models
-├── gateway/           # API Gateway (Node.js/TypeScript)
-├── infra/             # Infrastructure (Terraform, Docker, monitoring)
+├── ai/                # AI/ML pipeline
+├── gateway/           # API Gateway
+├── infra/             # Infrastructure
 ├── docs/              # Documentation
 ├── tests/             # Test suites
-├── scripts/           # Build and utility scripts
-├── design/            # UI/UX design specs
-├── research/          # Technical research
-└── benchmarks/        # Performance benchmarks
+└── scripts/           # Build and utility scripts
 ```
 
 ## Services
 
 | Service | Language | Port | Description |
 |---------|----------|------|-------------|
-| api-gateway | Go | 8080 | Request routing, auth, rate limiting |
-| auth-service | Go | 8081 | Authentication, JWT, OAuth |
-| user-service | Go | 8082 | User profiles, preferences |
-| social-service | Java | 8083 | Posts, comments, followers |
+| api-gateway | Go | 8080 | Request routing, rate limiting |
+| auth-service | Go | 8081 | Authentication, JWT |
+| user-service | Go | 8082 | User profiles, follows |
+| social-service | Java | 8083 | Posts, comments |
 | messaging-service | Go | 8084 | Real-time messaging |
 | ai-service | Python | 8085 | ML inference, embeddings |
 
@@ -66,23 +55,16 @@ megaverse/
 
 | Layer | Technologies |
 |-------|-------------|
-| Frontend | TypeScript, React, Next.js, Flutter |
-| Backend | Go, Java, Python, Node.js |
-| Database | MySQL, Redis |
+| Frontend | Next.js, React, TypeScript, Tailwind |
+| Backend | Go, Java, Python |
+| Database | MySQL |
 | AI/ML | Python, NumPy |
-| Infrastructure | Docker, Terraform |
 
 ## Documentation
 
 - [Architecture](./ARCHITECTURE.md)
 - [Roadmap](./ROADMAP.md)
 - [Contributing](./CONTRIBUTING.md)
-- [API Reference](./docs/api.md)
-- [Deployment](./docs/deployment.md)
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## License
 

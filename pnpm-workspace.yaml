@@ -1,7 +1,0 @@
-packages:
-  - "apps/*"
-  - "services/*/src"
-  - "libraries/*"
-  - "shared/*"
-  - "sdk/javascript"
-  - "gateway"

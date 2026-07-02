@@ -11,22 +11,16 @@
     "gateway"
   ],
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "test": "turbo test",
-    "lint": "turbo lint",
-    "format": "prettier --write .",
-    "typecheck": "turbo typecheck",
-    "clean": "turbo clean"
+    "dev": "next dev --workspace apps/web",
+    "build": "next build --workspace apps/web",
+    "start": "next start --workspace apps/web",
+    "lint": "next lint --workspace apps/web",
+    "test": "echo 'No tests yet'"
   },
   "devDependencies": {
-    "prettier": "^3.2.0",
-    "turbo": "^2.0.0",
     "typescript": "^5.4.0"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@9.0.0"
+    "node": ">=18.0.0"
+  }
 }

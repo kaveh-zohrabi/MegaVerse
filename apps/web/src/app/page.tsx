@@ -26,7 +26,6 @@ export default function Home() {
               <li>TypeScript</li>
               <li>Tailwind CSS</li>
               <li>MySQL</li>
-              <li>Redis</li>
             </ul>
           </div>
         </div>
@@ -34,14 +33,14 @@ export default function Home() {
         <div className="mt-8 p-6 border rounded-lg">
           <h2 className="text-xl font-semibold mb-2">Quick Start</h2>
           <pre className="bg-gray-100 p-4 rounded text-sm overflow-x-auto">
-{`# Install dependencies
-pnpm install
+{`# Start MySQL
+docker-compose -f docker-compose.dev.yml up -d
 
-# Start database
-docker-compose up -d
+# Install dependencies
+npm install
 
-# Start development
-pnpm dev`}
+# Run frontend
+npm run dev`}
           </pre>
         </div>
       </div>

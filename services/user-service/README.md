@@ -1,26 +1,45 @@
 # User Service
 
-Manages user profiles, preferences, and account settings.
+Go service managing user profiles, preferences, and social connections.
+
+## Tech Stack
+
+- **Language**: Go 1.22
+- **Router**: gorilla/mux
+- **Database**: MySQL 8.0
 
 ## Features
 
 - User profile management
-- User preferences
-- Account settings
-- Avatar upload
-- Profile search
-- User blocking/reporting
-- Privacy settings
+- Profile updates (bio, website, location, avatar)
+- Follow/unfollow users
+- Follower/following lists
+- Automatic profile creation
 
 ## Endpoints
 
-- `GET /users/:id` - Get user profile
-- `PUT /users/:id` - Update profile
-- `DELETE /users/:id` - Delete account
-- `GET /users/:id/avatar` - Get avatar
-- `PUT /users/:id/avatar` - Upload avatar
-- `GET /users/:id/settings` - Get settings
-- `PUT /users/:id/settings` - Update settings
-- `GET /users/search` - Search users
-- `POST /users/:id/block` - Block user
-- `POST /users/:id/report` - Report user
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | /users/{id} | No | Get user profile |
+| PUT | /users/me | Yes | Update own profile |
+| POST | /users/{id}/follow | Yes | Follow user |
+| POST | /users/{id}/unfollow | Yes | Unfollow user |
+| GET | /users/{id}/followers | No | Get followers list |
+| GET | /users/{id}/following | No | Get following list |
+| GET | /health | No | Health check |
+
+## Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| DATABASE_HOST | localhost | MySQL host |
+| DATABASE_PORT | 3306 | MySQL port |
+| DATABASE_NAME | megaverse | Database name |
+| AUTH_SERVICE_URL | http://localhost:8081 | Auth service URL |
+| PORT | 8082 | Server port |
+
+## Development
+
+```bash
+go run ./cmd/server
+```

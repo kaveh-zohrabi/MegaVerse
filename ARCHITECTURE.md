@@ -10,87 +10,77 @@ MegaVerse is a distributed microservices platform built as a polyglot monorepo.
 2. **Scalability**: Horizontal scaling for all components
 3. **Resilience**: Circuit breakers, retries, graceful degradation
 4. **Observability**: Distributed tracing, metrics, logging
-5. **Security**: Zero-trust architecture, encryption everywhere
+5. **Security**: Zero-trust, encryption everywhere
 
-## High-Level Architecture
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      Clients                            │
-│  ┌──────┐  ┌────────┐  ┌───────┐  ┌──────────────┐    │
-│  │ Web  │  │ Mobile │  │ CLI   │  │ Third Party  │    │
-│  └──┬───┘  └───┬────┘  └──┬────┘  └──────┬───────┘    │
-└─────┼──────────┼──────────┼──────────────┼─────────────┘
-      │          │          │              │
-┌─────▼──────────▼──────────▼──────────────▼─────────────┐
-│                   API Gateway                          │
-│              (Rate Limiting, Auth, Routing)             │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────┐
-│                   Service Mesh                         │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
-│  │  Auth   │  │  User   │  │ Social  │  │  AI     │  │
-│  │ Service │  │ Service │  │ Service │  │ Service │  │
-│  └─────────┘  └─────────┘  └─────────┘  └─────────┘  │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
-│  │ Payment │  │ Media   │  │Messaging│  │Analytics│  │
-│  │ Service │  │ Service │  │ Service │  │ Service │  │
-│  └─────────┘  └─────────┘  └─────────┘  └─────────┘  │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────┐
-│                   Data Layer                           │
-│  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐      │
-│  │Postgres│  │MongoDB │  │ Redis  │  │Elastic │      │
-│  │  SQL   │  │ NoSQL  │  │ Cache  │  │ Search │      │
-│  └────────┘  └────────┘  └────────┘  └────────┘      │
-└─────────────────────────────────────────────────────────┘
+                    ┌─────────────┐
+                    │   Clients   │
+                    │ Web/Mobile  │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │ API Gateway │
+                    │   (Go)      │
+                    └──────┬──────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+   ┌─────▼─────┐    ┌─────▼─────┐    ┌─────▼─────┐
+   │   Auth    │    │   User    │    │  Social   │
+   │  Service  │    │  Service  │    │  Service  │
+   │   (Go)    │    │   (Go)    │    │  (Java)   │
+   └─────┬─────┘    └─────┬─────┘    └─────┬─────┘
+         │                │                 │
+   ┌─────▼─────┐    ┌─────▼─────┐    ┌─────▼─────┐
+   │ Messaging │    │    AI     │    │   Shared  │
+   │  Service  │    │  Service  │    │   Data    │
+   │   (Go)    │    │ (Python)  │    │  Layer    │
+   └───────────┘    └───────────┘    └───────────┘
 ```
 
-## Service Communication
+## Services
 
-- **Synchronous**: gRPC for inter-service, REST for external
-- **Asynchronous**: Event-driven via Kafka/RabbitMQ
-- **Real-time**: WebSocket for live updates
+| Service | Language | Port | Description |
+|---------|----------|------|-------------|
+| api-gateway | Go | 8080 | Request routing, auth, rate limiting |
+| auth-service | Go | 8081 | Authentication, JWT, OAuth |
+| user-service | Go | 8082 | User profiles, preferences |
+| social-service | Java | 8083 | Posts, comments, followers |
+| messaging-service | Go | 8084 | Real-time messaging |
+| ai-service | Python | 8085 | ML inference, embeddings |
+
+## Communication
+
+- **Sync**: gRPC (internal), REST (external)
+- **Async**: Kafka events
+- **Real-time**: WebSocket
 
 ## Data Flow
 
-1. Client requests hit API Gateway
-2. Gateway authenticates and routes to service
-3. Service processes and queries databases
-4. Events published for async processing
-5. Responses returned to client
+1. Client → API Gateway (auth, rate limit)
+2. Gateway → Service (routing)
+3. Service → Database (query)
+4. Service → Kafka (events)
+5. Response → Client
 
-## Technology Choices
+## Tech Stack
 
-| Layer | Technology | Rationale |
-|-------|-----------|-----------|
-| API Gateway | Go | Performance, low latency |
-| Auth Service | Go | Security, concurrency |
-| User Service | Go | Performance |
-| Social Service | Java/Kotlin | Enterprise patterns |
-| AI Service | Python | ML ecosystem |
-| Frontend | Next.js/React | SEO, performance |
-| Mobile | Flutter | Cross-platform |
-| Databases | Polyglot | Best tool for each job |
-| Message Queue | Kafka | Event sourcing, replay |
-| Cache | Redis | Speed, pub/sub |
-| Search | Elasticsearch | Full-text search |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js, React, Flutter |
+| Backend | Go, Java, Python |
+| Database | PostgreSQL, Redis, Elasticsearch |
+| Queue | Kafka |
+| Infra | Docker, Kubernetes, Terraform |
+| AI | Python, PyTorch |
 
-## Deployment Architecture
+## Security
 
-- **Kubernetes**: Container orchestration
-- **Terraform**: Infrastructure as Code
-- **Helm**: Package management
-- **ArgoCD**: GitOps deployments
-- **Istio**: Service mesh
-
-## Security Architecture
-
-- Zero-trust network
+- OAuth 2.0 / OIDC authentication
+- JWT with RS256 signing
+- RBAC authorization
 - mTLS between services
-- OAuth 2.0 / OIDC for auth
-- RBAC for authorization
 - AES-256 encryption at rest
 - TLS 1.3 in transit

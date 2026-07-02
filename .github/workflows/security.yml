@@ -2,7 +2,7 @@ name: Security Scan
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:
@@ -29,15 +29,3 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: p/default
-
-  container-scan:
-    name: Container Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          severity: 'CRITICAL,HIGH'

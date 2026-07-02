@@ -1,75 +1,71 @@
 # MegaVerse
 
-One of the largest modular software ecosystems ever created.
+A modular, polyglot software ecosystem built for scale.
 
 ## Overview
 
-MegaVerse combines AI, Cloud Computing, Social Platform, Communication, Marketplace, Developer Tools, Business Software, Analytics, and many other services into one scalable ecosystem.
-
-## Architecture
-
-MegaVerse is built as a polyglot monorepo with microservices architecture. See [ARCHITECTURE.md](./ARCHITECTURE.md) for full details.
+MegaVerse is a monorepo-based platform combining AI, social features, communication, marketplace, and developer tools into one scalable ecosystem. Built with microservices architecture and designed for billions of users.
 
 ## Quick Start
 
 ```bash
 # Install dependencies
-make setup
+pnpm install
 
 # Start development
-make dev
+pnpm dev
 
 # Run tests
-make test
+pnpm test
 ```
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- Go 1.22+
+- Docker & Docker Compose
 
 ## Project Structure
 
 ```
 megaverse/
-├── apps/              # Frontend applications
-├── services/          # Backend microservices
-├── packages/          # Shared configurations
-├── libraries/         # Reusable libraries
-├── shared/            # Shared models, types, constants
-├── sdk/               # Client SDKs
-├── ai/                # AI/ML pipeline
-├── cloud/             # Cloud infrastructure configs
+├── apps/              # Frontend applications (Next.js, Flutter)
+├── services/          # Backend microservices (Go, Java, Python)
+├── libraries/         # Shared libraries (UI, logging, etc.)
+├── shared/            # Shared types, constants, utilities
+├── sdk/               # Client SDKs (JavaScript, Python, Go)
+├── ai/                # AI/ML pipeline and models
 ├── gateway/           # API Gateway
+├── infra/             # Infrastructure (Terraform, Docker, monitoring)
 ├── docs/              # Documentation
 ├── tests/             # Test suites
-├── configs/           # Configuration files
-├── build/             # Build system
-├── scripts/           # Utility scripts
-├── tools/             # Developer tools
-├── examples/          # Code examples
-├── templates/         # Project templates
-├── assets/            # Static assets
-├── k8s/               # Kubernetes manifests
-├── helm/              # Helm charts
-├── monitoring/        # Monitoring configs
-├── security/          # Security policies
-├── data/              # Data pipelines
-└── infrastructure/    # IaC (Terraform, Ansible)
+├── configs/           # Environment and service configs
+├── scripts/           # Build and utility scripts
+├── design/            # UI/UX design specs
+├── research/          # Technical research
+├── benchmarks/        # Performance benchmarks
+├── examples/          # Code examples and templates
+└── tools/             # Developer tooling
 ```
 
 ## Technologies
 
-- **Languages**: TypeScript, Go, Python, Rust, Java, Kotlin, C#, Dart, Zig, C/C++
-- **Frontend**: React, Next.js, Flutter
-- **Backend**: Go, Java, Node.js, Python, Rust
-- **AI/ML**: Python, CUDA, C++
-- **Infrastructure**: Terraform, Kubernetes, Docker, Ansible
-- **Databases**: PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, ClickHouse, Cassandra, Neo4j
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | TypeScript, React, Next.js, Flutter |
+| Backend | Go, Java, Python, Node.js |
+| AI/ML | Python, CUDA |
+| Infrastructure | Terraform, Docker, Kubernetes |
+| Databases | PostgreSQL, Redis, Elasticsearch |
 
 ## Documentation
 
-- [Architecture](./docs/architecture/)
-- [Development Guide](./docs/development/)
-- [API Design](./docs/api/)
-- [Database Design](./docs/database/)
-- [Security](./docs/security/)
-- [Deployment](./docs/deployment/)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Roadmap](./docs/ROADMAP.md)
+- [Contributing](./CONTRIBUTING.md)
+- [API Reference](./docs/api.md)
+- [Deployment](./docs/deployment.md)
 
 ## Contributing
 

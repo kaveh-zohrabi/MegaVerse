@@ -1,62 +1,79 @@
-# MegaVerse Contributing Guide
+# Contributing to MegaVerse
 
-## Welcome
-
-Thank you for your interest in contributing to MegaVerse!
+Thank you for your interest in contributing!
 
 ## Getting Started
 
 1. Fork the repository
 2. Clone your fork
-3. Create a feature branch
-4. Make your changes
-5. Submit a pull request
+3. Install dependencies: `pnpm install`
+4. Create a feature branch: `git checkout -b feat/my-feature`
+5. Make your changes
+6. Submit a pull request
 
-## Development Setup
+## Development
 
 ```bash
-# Clone
-git clone https://github.com/your-org/megaverse.git
-cd megaverse
+# Install dependencies
+pnpm install
 
-# Setup
-make setup
+# Start all services
+pnpm dev
 
-# Start development
-make dev
+# Run tests
+pnpm test
+
+# Lint code
+pnpm lint
+
+# Format code
+pnpm format
 ```
 
-## Code Style
+## Project Layout
 
-- Follow existing patterns
-- Run linters before committing
-- Write tests for new features
-- Update documentation
+| Directory | Description |
+|-----------|-------------|
+| `apps/` | Frontend applications |
+| `services/` | Backend microservices |
+| `libraries/` | Shared libraries |
+| `sdk/` | Client SDKs |
+| `ai/` | AI/ML pipeline |
+| `docs/` | Documentation |
+
+## Code Standards
+
+- TypeScript: strict mode, ESLint + Prettier
+- Go: `gofmt`, `golangci-lint`
+- Python: `ruff`, type hints required
+- Java: Google Java Style, Spotless
 
 ## Commit Messages
 
-Follow Conventional Commits:
-- `feat:` new feature
-- `fix:` bug fix
-- `docs:` documentation
-- `test:` tests
-- `chore:` maintenance
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-## Pull Requests
+```
+feat: add user authentication
+fix: resolve race condition in cache
+docs: update API reference
+test: add integration tests for payments
+chore: update dependencies
+```
 
-1. Update documentation
-2. Add tests
-3. Ensure CI passes
-4. Request review
-5. Address feedback
+## Pull Request Checklist
+
+- [ ] Code follows project style
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] CI passes
+- [ ] PR description explains changes
 
 ## Code Review
 
-- Be respectful
-- Provide constructive feedback
-- Focus on the code, not the person
-- Suggest improvements
+- Be respectful and constructive
+- Focus on code quality and correctness
+- Suggest improvements when possible
 
 ## Questions?
 
-Open a GitHub Discussion or reach out on Discord.
+Open a [GitHub Discussion](https://github.com/megaverse/megaverse/discussions).

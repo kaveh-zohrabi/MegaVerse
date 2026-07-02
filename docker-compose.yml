@@ -1,155 +1,6 @@
 version: '3.8'
 
 services:
-  # Core Services
-  api-gateway:
-    build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - GATEWAY_PORT=8080
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-    depends_on:
-      - postgres
-      - redis
-
-  auth-service:
-    build:
-      context: ./services/auth-service
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
-    depends_on:
-      - postgres
-      - redis
-
-  user-service:
-    build:
-      context: ./services/user-service
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-    depends_on:
-      - postgres
-      - redis
-
-  social-service:
-    build:
-      context: ./services/social-service
-      dockerfile: Dockerfile
-    ports:
-      - "8083:8083"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-    depends_on:
-      - postgres
-      - redis
-
-  messaging-service:
-    build:
-      context: ./services/messaging-service
-      dockerfile: Dockerfile
-    ports:
-      - "8084:8084"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-      - KAFKA_BROKERS=${KAFKA_BROKERS}
-    depends_on:
-      - postgres
-      - redis
-      - kafka
-
-  notification-service:
-    build:
-      context: ./services/notification-service
-      dockerfile: Dockerfile
-    ports:
-      - "8085:8085"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-      - KAFKA_BROKERS=${KAFKA_BROKERS}
-    depends_on:
-      - postgres
-      - redis
-      - kafka
-
-  media-service:
-    build:
-      context: ./services/media-service
-      dockerfile: Dockerfile
-    ports:
-      - "8086:8086"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - S3_BUCKET=${S3_BUCKET}
-      - S3_ENDPOINT=${S3_ENDPOINT}
-    depends_on:
-      - postgres
-      - localstack
-
-  payment-service:
-    build:
-      context: ./services/payment-service
-      dockerfile: Dockerfile
-    ports:
-      - "8087:8087"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-    depends_on:
-      - postgres
-
-  search-service:
-    build:
-      context: ./services/search-service
-      dockerfile: Dockerfile
-    ports:
-      - "8088:8088"
-    environment:
-      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
-    depends_on:
-      - elasticsearch
-
-  ai-service:
-    build:
-      context: ./services/ai-service
-      dockerfile: Dockerfile
-    ports:
-      - "8089:8089"
-    environment:
-      - AI_MODEL_DIR=${AI_MODEL_DIR}
-      - AI_EMBEDDING_DIM=${AI_EMBEDDING_DIM}
-    depends_on:
-      - postgres
-      - redis
-
-  email-service:
-    build:
-      context: ./services/email-service
-      dockerfile: Dockerfile
-    ports:
-      - "8090:8090"
-    environment:
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-    depends_on:
-      - mailhog
-
-  # Infrastructure
   postgres:
     image: postgres:16-alpine
     ports:
@@ -165,8 +16,6 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
 
   elasticsearch:
     image: elasticsearch:8.12.0
@@ -175,8 +24,6 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -190,25 +37,10 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
 
-  localstack:
-    image: localstack/localstack:latest
-    ports:
-      - "4566:4566"
-    environment:
-      SERVICES: s3,sqs,sns,lambda
-
-  mailhog:
-    image: mailhog/mailhog:latest
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:latest
@@ -217,13 +49,11 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
+  mailhog:
+    image: mailhog/mailhog:latest
     ports:
-      - "16686:16686"
-      - "14268:14268"
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   postgres_data:
-  redis_data:
-  es_data:

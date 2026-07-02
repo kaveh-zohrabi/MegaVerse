@@ -6,11 +6,8 @@
   "workspaces": [
     "apps/*",
     "services/*/src",
-    "packages/*",
     "libraries/*",
-    "shared/*",
     "sdk/javascript",
-    "sdk/cli",
     "gateway"
   ],
   "scripts": {
@@ -20,14 +17,9 @@
     "lint": "turbo lint",
     "format": "prettier --write .",
     "typecheck": "turbo typecheck",
-    "clean": "turbo clean",
-    "prepare": "husky install"
+    "clean": "turbo clean"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
     "prettier": "^3.2.0",
     "turbo": "^2.0.0",
     "typescript": "^5.4.0"

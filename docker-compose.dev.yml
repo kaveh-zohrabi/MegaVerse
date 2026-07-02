@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Databases
   postgres:
     image: postgres:16-alpine
     ports:
@@ -12,17 +11,6 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./configs/database/postgresql:/docker-entrypoint-initdb.d
-
-  mongodb:
-    image: mongo:7
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: megaverse
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - mongo_data:/data/db
 
   redis:
     image: redis:7-alpine
@@ -41,15 +29,6 @@ services:
     volumes:
       - es_data:/usr/share/elasticsearch/data
 
-  clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    ports:
-      - "8123:8123"
-      - "9000:9000"
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-
-  # Message Queue
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     ports:
@@ -62,19 +41,12 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
 
-  # Cache
-  valkey:
-    image: valkey/valkey:8-alpine
-    ports:
-      - "6380:6379"
-
-  # Monitoring
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infra/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:latest
@@ -82,20 +54,6 @@ services:
       - "3001:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "16686:16686"
-      - "14268:14268"
-
-  # Local Development Tools
-  localstack:
-    image: localstack/localstack:latest
-    ports:
-      - "4566:4566"
-    environment:
-      SERVICES: s3,sqs,sns,lambda
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -105,7 +63,5 @@ services:
 
 volumes:
   postgres_data:
-  mongo_data:
   redis_data:
   es_data:
-  clickhouse_data:

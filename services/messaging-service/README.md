@@ -1,25 +1,59 @@
 # Messaging Service
 
-Real-time messaging between users.
+Go service handling real-time messaging with WebSocket support.
+
+## Tech Stack
+
+- **Language**: Go 1.22
+- **Router**: gorilla/mux
+- **WebSocket**: gorilla/websocket
+- **Database**: MySQL 8.0
 
 ## Features
 
-- Direct messages
-- Group chats
-- Message history
+- Direct and group conversations
+- Real-time messaging via WebSocket
+- Message history with pagination
 - Read receipts
-- Typing indicators
-- File/image sharing
-- Message reactions
-- Threaded conversations
+- Room-based broadcasting
 
 ## Endpoints
 
-- `GET /conversations` - List conversations
-- `POST /conversations` - Create conversation
-- `GET /conversations/:id/messages` - Get messages
-- `POST /conversations/:id/messages` - Send message
-- `PUT /messages/:id` - Edit message
-- `DELETE /messages/:id` - Delete message
-- `POST /messages/:id/reactions` - Add reaction
-- `WebSocket /ws` - Real-time connection
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | /health | No | Health check |
+| WS | /ws | No | WebSocket connection |
+| POST | /conversations | Yes | Create conversation |
+| GET | /conversations | Yes | List conversations |
+| POST | /conversations/{id}/messages | Yes | Send message |
+| GET | /conversations/{id}/messages | Yes | Get messages |
+
+## WebSocket
+
+Connect to `ws://localhost:8084/ws?user_id=xxx&room=xxx`
+
+### Message Format
+
+```json
+{
+  "type": "message",
+  "room": "global",
+  "data": {
+    "user_id": "xxx",
+    "content": "Hello!"
+  }
+}
+```
+
+## Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| DATABASE_HOST | localhost | MySQL host |
+| PORT | 8084 | Server port |
+
+## Development
+
+```bash
+go run ./cmd/server
+```

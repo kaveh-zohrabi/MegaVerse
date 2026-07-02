@@ -13,30 +13,54 @@ pnpm add @megaverse/javascript-sdk
 ## Quick Start
 
 ```typescript
-import { MegaVerse } from '@megaverse/javascript-sdk';
+import { MegaVerseClient } from '@megaverse/javascript-sdk';
 
-const client = new MegaVerse({
-  apiKey: 'your-api-key',
-  baseUrl: 'https://api.megaverse.dev',
+const client = new MegaVerseClient({
+  baseUrl: 'http://localhost:8080',
 });
+
+// Login
+await client.login('user@example.com', 'password');
 
 // Get user
-const user = await client.users.get('user-id');
+const user = await client.getUser('user-id');
 
 // Create post
-const post = await client.posts.create({
-  content: 'Hello MegaVerse!',
-});
+const post = await client.createPost('Hello MegaVerse!');
+
+// Get feed
+const { posts } = await client.getFeed({ limit: 10 });
 ```
 
-## Features
+## API Reference
 
-- TypeScript support
-- Auto-retry with exponential backoff
-- Request/response interceptors
-- WebSocket support
-- Type-safe API calls
+### Client
 
-## Documentation
+```typescript
+new MegaVerseClient({ baseUrl: string, apiKey?: string })
+```
 
-See [docs.megaverse.dev/sdk/javascript](https://docs.megaverse.dev/sdk/javascript)
+### Auth
+
+- `register(email, name, password)` - Register new user
+- `login(email, password)` - Login and get tokens
+- `setToken(token)` - Set auth token
+
+### Users
+
+- `getUser(id)` - Get user profile
+- `updateProfile(updates)` - Update own profile
+- `follow(userId)` - Follow user
+- `unfollow(userId)` - Unfollow user
+
+### Posts
+
+- `createPost(content, mediaUrl?)` - Create post
+- `getPost(id)` - Get post
+- `deletePost(id)` - Delete post
+- `getFeed(params?)` - Get feed
+- `getUserPosts(userId, params?)` - Get user posts
+
+### Health
+
+- `health()` - Check API health

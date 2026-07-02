@@ -5,13 +5,13 @@ build-backend = "hatchling.build"
 [project]
 name = "megaverse-ai-service"
 version = "0.1.0"
-description = "MegaVerse AI Service"
+description = "MegaVerse AI Service - ML inference and embeddings"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.109.0",
-    "uvicorn>=0.27.0",
+    "uvicorn[standard]>=0.27.0",
     "pydantic>=2.5.0",
     "numpy>=1.26.0",
 ]
@@ -20,8 +20,8 @@ dependencies = [
 dev = [
     "pytest>=7.4.0",
     "pytest-asyncio>=0.23.0",
+    "httpx>=0.26.0",
     "ruff>=0.1.0",
-    "mypy>=1.8.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -33,7 +33,3 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-
-[tool.mypy]
-python_version = "3.12"
-strict = true

@@ -11,10 +11,10 @@
     "gateway"
   ],
   "scripts": {
-    "dev": "next dev --workspace apps/web",
-    "build": "next build --workspace apps/web",
-    "start": "next start --workspace apps/web",
-    "lint": "next lint --workspace apps/web",
+    "dev": "cd apps/web && next dev",
+    "build": "cd apps/web && next build",
+    "start": "cd apps/web && next start",
+    "lint": "cd apps/web && next lint",
     "test": "echo 'No tests yet'"
   },
   "devDependencies": {

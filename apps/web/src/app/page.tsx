@@ -1,179 +1,286 @@
-import Link from 'next/link';
+'use client';
 
-const services = [
-  { name: 'Auth Service', lang: 'Go', icon: '🔐', desc: 'JWT, OAuth, secure authentication' },
-  { name: 'User Service', lang: 'Go', icon: '👤', desc: 'Profiles, follows, social graph' },
-  { name: 'Social Service', lang: 'Java', icon: '📱', desc: 'Posts, comments, reactions' },
-  { name: 'Messaging', lang: 'Go', icon: '💬', desc: 'Real-time WebSocket chat' },
-  { name: 'AI Service', lang: 'Python', icon: '🤖', desc: 'Embeddings, vector search' },
-  { name: 'API Gateway', lang: 'Go', icon: '🌐', desc: 'Routing, rate limiting, proxy' },
-];
+import { useState, useEffect, useRef } from 'react';
 
-const features = [
-  { title: 'Polyglot', desc: 'Go, Java, Python, TypeScript - each service in its best language', icon: '⚡' },
-  { title: 'Microservices', desc: 'Independent, scalable, deployable services', icon: '🏗️' },
-  { title: 'Real-time', desc: 'WebSocket support for live messaging', icon: '🔄' },
-  { title: 'AI-Powered', desc: 'Built-in ML inference and embeddings', icon: '🧠' },
-  { title: 'Type-Safe', desc: 'Shared types across all TypeScript packages', icon: '🛡️' },
-  { title: 'Open Source', desc: 'MIT licensed, community driven', icon: '💚' },
-];
+interface Message {
+  id: number;
+  conversation_id: string;
+  sender_id: string;
+  sender_name: string;
+  content: string;
+  created_at: string;
+}
 
-const stats = [
-  { value: '6', label: 'Microservices' },
-  { value: '4', label: 'Languages' },
-  { value: '3', label: 'SDKs' },
-  { value: '∞', label: 'Scalability' },
-];
+interface User {
+  id: string;
+  username: string;
+}
 
-export default function Home() {
+export default function Messenger() {
+  const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRegister, setIsRegister] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [currentConvID, setCurrentConvID] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const connectWebSocket = (userId: string) => {
+    const socket = new WebSocket(`ws://localhost:8080/ws?user_id=${userId}`);
+
+    socket.onopen = () => {
+      console.log('Connected to WebSocket');
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'message' && data.message) {
+        if (data.message.conversation_id === currentConvID) {
+          setMessages(prev => [...prev, data.message]);
+        }
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from WebSocket');
+    };
+
+    setWs(socket);
+    return socket;
+  };
+
+  const handleAuth = async () => {
+    const endpoint = isRegister ? '/api/register' : '/api/login';
+    const res = await fetch(`http://localhost:8080${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setUser(data);
+      connectWebSocket(data.id);
+      loadUsers();
+    } else {
+      alert('خطا در ورود');
+    }
+  };
+
+  const loadUsers = async () => {
+    const res = await fetch('http://localhost:8080/api/users');
+    if (res.ok) {
+      const data = await res.json();
+      setUsers(data.users || []);
+    }
+  };
+
+  const startChat = (targetUser: User) => {
+    setSelectedUser(targetUser);
+    const convID = [user?.id, targetUser.id].sort().join('_');
+    setCurrentConvID(`dm_${convID}`);
+    loadMessages(`dm_${convID}`);
+  };
+
+  const loadMessages = async (convID: string) => {
+    const res = await fetch(`http://localhost:8080/api/messages?conversation_id=${convID}`);
+    if (res.ok) {
+      const data = await res.json();
+      setMessages(data.messages || []);
+    }
+  };
+
+  const sendMessage = () => {
+    if (!input.trim() || !ws || !selectedUser) return;
+
+    ws.send(JSON.stringify({
+      type: 'private_message',
+      receiver_id: selectedUser.id,
+      content: input,
+    }));
+
+    setInput('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-2">🚀 MegaVerse</h1>
+            <p className="text-gray-400">پیامرسان مدرن</p>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-6">
+              {isRegister ? 'ثبت نام' : 'ورود'}
+            </h2>
+
+            <input
+              type="text"
+              placeholder="نام کاربری"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-purple-500"
+            />
+
+            <input
+              type="password"
+              placeholder="رمز عبور"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 mb-6 focus:outline-none focus:border-purple-500"
+              onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
+            />
+
+            <button
+              onClick={handleAuth}
+              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity"
+            >
+              {isRegister ? 'ثبت نام' : 'ورود'}
+            </button>
+
+            <p className="text-center text-gray-400 mt-4">
+              {isRegister ? 'حساب دارید؟' : 'حساب ندارید؟'}
+              <button
+                onClick={() => setIsRegister(!isRegister)}
+                className="text-purple-400 hover:text-purple-300 mr-2"
+              >
+                {isRegister ? 'ورود' : 'ثبت نام'}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-grid">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4">
-        {/* Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-slow" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '4s' }} />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex">
+      {/* Sidebar */}
+      <div className="w-80 bg-black/30 border-r border-white/10 flex flex-col">
+        <div className="p-4 border-b border-white/10">
+          <h1 className="text-xl font-bold text-white">🚀 MegaVerse</h1>
+          <p className="text-sm text-gray-400">خوش آمدید {user.username}</p>
         </div>
 
-        <div className="relative z-10 text-center max-w-5xl mx-auto">
-          <div className="animate-float mb-8">
-            <span className="text-8xl">🚀</span>
-          </div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold mb-6">
-            <span className="gradient-text">MegaVerse</span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            A modular, polyglot software ecosystem built for scale. 
-            One platform, infinite possibilities.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="#services" className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity glow">
-              Explore Services
-            </Link>
-            <a href="https://github.com/kaveh-zohrabi/MegaVerse" target="_blank" rel="noopener noreferrer" className="px-8 py-4 glass rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
-              View on GitHub
-            </a>
-          </div>
-
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl md:text-5xl font-bold gradient-text">{stat.value}</div>
-                <div className="text-gray-500 mt-2">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            Why <span className="gradient-text">MegaVerse</span>?
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature) => (
-              <div key={feature.title} className="glass rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 group">
-                <span className="text-4xl mb-4 block group-hover:scale-110 transition-transform">{feature.icon}</span>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section id="services" className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            <span className="gradient-text">Services</span>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <div key={service.name} className="glass rounded-2xl p-6 hover:glow transition-all duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">{service.icon}</span>
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <h3 className="text-sm font-semibold text-gray-400 mb-3">کاربران آنلاین</h3>
+            {users.filter(u => u.id !== user.id).map((u) => (
+              <button
+                key={u.id}
+                onClick={() => startChat(u)}
+                className={`w-full text-right p-3 rounded-xl mb-2 transition-colors ${
+                  selectedUser?.id === u.id
+                    ? 'bg-purple-500/30 text-white'
+                    : 'hover:bg-white/5 text-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                    {u.username[0].toUpperCase()}
+                  </div>
                   <div>
-                    <h3 className="text-lg font-bold">{service.name}</h3>
-                    <span className="text-sm text-purple-400">{service.lang}</span>
+                    <div className="font-medium">{u.username}</div>
+                    <div className="text-xs text-green-400">آنلاین</div>
                   </div>
                 </div>
-                <p className="text-gray-400">{service.desc}</p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Tech Stack Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            Built with <span className="gradient-text">Modern Tech</span>
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { name: 'Go', icon: '🔵' },
-              { name: 'Java', icon: '☕' },
-              { name: 'Python', icon: '🐍' },
-              { name: 'TypeScript', icon: '📘' },
-              { name: 'Next.js', icon: '⚛️' },
-              { name: 'MySQL', icon: '🗄️' },
-              { name: 'Docker', icon: '🐳' },
-              { name: 'Tailwind', icon: '🎨' },
-            ].map((tech) => (
-              <div key={tech.name} className="glass rounded-xl p-6 text-center hover:bg-white/10 transition-colors">
-                <span className="text-3xl mb-2 block">{tech.icon}</span>
-                <span className="text-sm text-gray-400">{tech.name}</span>
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {selectedUser ? (
+          <>
+            {/* Chat Header */}
+            <div className="p-4 border-b border-white/10 bg-black/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                  {selectedUser.username[0].toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-semibold text-white">{selectedUser.username}</div>
+                  <div className="text-xs text-green-400">آنلاین</div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* CTA Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="glass rounded-3xl p-12 glow">
-            <h2 className="text-4xl font-bold mb-6">Ready to Build?</h2>
-            <p className="text-gray-400 mb-8 text-lg">
-              Start building with MegaVerse today. Open source, production ready.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="https://github.com/kaveh-zohrabi/MegaVerse" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
-                Get Started
-              </a>
-              <Link href="#services" className="px-8 py-4 glass rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
-                Learn More
-              </Link>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${msg.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                      msg.sender_id === user.id
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                        : 'bg-white/10 text-white'
+                    }`}
+                  >
+                    {msg.sender_id !== user.id && (
+                      <div className="text-xs text-purple-300 mb-1">{msg.sender_name}</div>
+                    )}
+                    <div>{msg.content}</div>
+                    <div className="text-xs opacity-60 mt-1">
+                      {new Date(msg.created_at).toLocaleTimeString('fa-IR')}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="p-4 border-t border-white/10 bg-black/20">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="پیام بنویسید..."
+                  className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+                />
+                <button
+                  onClick={sendMessage}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity"
+                >
+                  ارسال
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-400">
+              <div className="text-6xl mb-4">💬</div>
+              <p className="text-xl">یک کاربر را انتخاب کنید</p>
+              <p className="text-sm mt-2">برای شروع چت</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-white/10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🚀</span>
-            <span className="font-bold text-xl">MegaVerse</span>
-          </div>
-          <p className="text-gray-500">© 2026 MegaVerse. MIT License.</p>
-          <a href="https://github.com/kaveh-zohrabi/MegaVerse" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-            GitHub →
-          </a>
-        </div>
-      </footer>
+        )}
+      </div>
     </div>
   );
 }

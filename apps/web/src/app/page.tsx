@@ -24,42 +24,46 @@ export default function Messenger() {
   const [users, setUsers] = useState<User[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [ws, setWs] = useState<WebSocket | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [currentConvID, setCurrentConvID] = useState('');
+  const [allMessages, setAllMessages] = useState<Record<string, Message[]>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const connectWebSocket = (userId: string) => {
-    const socket = new WebSocket(`ws://localhost:8080/ws?user_id=${userId}`);
+  useEffect(() => {
+    if (user) {
+      loadUsers();
+    }
+  }, [user]);
 
-    socket.onopen = () => {
-      console.log('Connected to WebSocket');
-    };
+  useEffect(() => {
+    if (currentConvID) {
+      loadMessages();
+    }
+  }, [currentConvID]);
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'message' && data.message) {
-        if (data.message.conversation_id === currentConvID) {
-          setMessages(prev => [...prev, data.message]);
-        }
-      }
-    };
+  const loadUsers = async () => {
+    const res = await fetch('/api/users');
+    if (res.ok) {
+      const data = await res.json();
+      setUsers(data.users || []);
+    }
+  };
 
-    socket.onclose = () => {
-      console.log('Disconnected from WebSocket');
-    };
-
-    setWs(socket);
-    return socket;
+  const loadMessages = async () => {
+    const res = await fetch(`/api/messages?conversation_id=${currentConvID}`);
+    if (res.ok) {
+      const data = await res.json();
+      setMessages(data.messages || []);
+    }
   };
 
   const handleAuth = async () => {
     const endpoint = isRegister ? '/api/register' : '/api/login';
-    const res = await fetch(`http://localhost:8080${endpoint}`, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -68,46 +72,40 @@ export default function Messenger() {
     if (res.ok) {
       const data = await res.json();
       setUser(data);
-      connectWebSocket(data.id);
-      loadUsers();
     } else {
-      alert('خطا در ورود');
-    }
-  };
-
-  const loadUsers = async () => {
-    const res = await fetch('http://localhost:8080/api/users');
-    if (res.ok) {
-      const data = await res.json();
-      setUsers(data.users || []);
+      const err = await res.json();
+      alert(err.error || 'خطا');
     }
   };
 
   const startChat = (targetUser: User) => {
     setSelectedUser(targetUser);
-    const convID = [user?.id, targetUser.id].sort().join('_');
-    setCurrentConvID(`dm_${convID}`);
-    loadMessages(`dm_${convID}`);
+    const sorted = [user?.id, targetUser.id].sort();
+    const convID = `dm_${sorted[0]}_${sorted[1]}`;
+    setCurrentConvID(convID);
   };
 
-  const loadMessages = async (convID: string) => {
-    const res = await fetch(`http://localhost:8080/api/messages?conversation_id=${convID}`);
+  const sendMessage = async () => {
+    if (!input.trim() || !selectedUser || !user) return;
+
+    const sorted = [user.id, selectedUser.id].sort();
+    const convID = `dm_${sorted[0]}_${sorted[1]}`;
+
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        conversation_id: convID,
+        sender_id: user.id,
+        content: input,
+      }),
+    });
+
     if (res.ok) {
-      const data = await res.json();
-      setMessages(data.messages || []);
+      const msg = await res.json();
+      setMessages(prev => [...prev, msg]);
+      setInput('');
     }
-  };
-
-  const sendMessage = () => {
-    if (!input.trim() || !ws || !selectedUser) return;
-
-    ws.send(JSON.stringify({
-      type: 'private_message',
-      receiver_id: selectedUser.id,
-      content: input,
-    }));
-
-    setInput('');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -181,7 +179,7 @@ export default function Messenger() {
 
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
-            <h3 className="text-sm font-semibold text-gray-400 mb-3">کاربران آنلاین</h3>
+            <h3 className="text-sm font-semibold text-gray-400 mb-3">کاربران</h3>
             {users.filter(u => u.id !== user.id).map((u) => (
               <button
                 key={u.id}
@@ -203,7 +201,19 @@ export default function Messenger() {
                 </div>
               </button>
             ))}
+            {users.filter(u => u.id !== user.id).length === 0 && (
+              <p className="text-gray-500 text-sm">هنوز کاربری ثبت نام نکرده</p>
+            )}
           </div>
+        </div>
+
+        <div className="p-4 border-t border-white/10">
+          <button
+            onClick={() => { setUser(null); setMessages([]); setSelectedUser(null); }}
+            className="w-full py-2 text-gray-400 hover:text-white transition-colors"
+          >
+            خروج
+          </button>
         </div>
       </div>
 
@@ -211,7 +221,6 @@ export default function Messenger() {
       <div className="flex-1 flex flex-col">
         {selectedUser ? (
           <>
-            {/* Chat Header */}
             <div className="p-4 border-b border-white/10 bg-black/20">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
@@ -224,7 +233,6 @@ export default function Messenger() {
               </div>
             </div>
 
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((msg) => (
                 <div
@@ -251,7 +259,6 @@ export default function Messenger() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <div className="p-4 border-t border-white/10 bg-black/20">
               <div className="flex gap-3">
                 <input

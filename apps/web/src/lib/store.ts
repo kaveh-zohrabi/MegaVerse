@@ -21,7 +21,18 @@ export interface Conversation {
   updated_at: string;
 }
 
-export const userStore: Record<string, User> = {};
+export const userStore: Record<string, User> = {
+  'user_1': { id: 'user_1', username: 'ali', password: '123456', online: true },
+  'user_2': { id: 'user_2', username: 'reza', password: '123456', online: true },
+  'user_3': { id: 'user_3', username: 'sara', password: '123456', online: true },
+  'user_4': { id: 'user_4', username: 'mina', password: '123456', online: true },
+  'user_5': { id: 'user_5', username: 'hassan', password: '123456', online: true },
+  'user_6': { id: 'user_6', username: 'mahsa', password: '123456', online: true },
+  'user_7': { id: 'user_7', username: 'amir', password: '123456', online: true },
+  'user_8': { id: 'user_8', username: 'nazanin', password: '123456', online: true },
+  'user_9': { id: 'user_9', username: 'mohammad', password: '123456', online: true },
+  'user_10': { id: 'user_10', username: 'zahra', password: '123456', online: true },
+};
 export const messageStore: Record<string, Message[]> = {};
 export const conversationStore: Record<string, Conversation> = {};
 let nextMsgId = 1;

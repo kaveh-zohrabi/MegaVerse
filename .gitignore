@@ -13,6 +13,7 @@ out/
 .target/
 bin/
 obj/
+.next/
 
 # Environment files
 .env

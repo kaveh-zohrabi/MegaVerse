@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getMessages, addMessage, getConvId, getUserById } from '@/lib/store';
+import { getMessages, addMessage, getUserById } from '../../lib/store';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

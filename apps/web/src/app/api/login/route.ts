@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUserByUsername } from '../../lib/store';
+import { getUserByUsername } from '../../../lib/store';
 
 export async function POST(request: Request) {
   try {

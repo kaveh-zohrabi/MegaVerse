@@ -119,3 +119,6 @@ credentials/
 *.so
 *.dll
 *.dylib
+
+# Go binary
+messenger

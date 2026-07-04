@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'MegaVerse - Modular Software Ecosystem',
-  description: 'A modular, polyglot software ecosystem built for scale. Go, Java, Python, TypeScript.',
+  title: 'MegaVerse | پیامرسان مدرن',
+  description: 'پیامرسان مدرن و سریع با طراحی زیبا',
 };
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="fa" dir="rtl">
       <body>{children}</body>
     </html>
   );
